@@ -25,6 +25,8 @@ class ProductResource extends Resource
 
     protected static ?string $navigationGroup = 'Master Data';
 
+    protected static ?int $navigationSort = 0;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -46,6 +48,7 @@ class ProductResource extends Resource
 
                                     $set('slug', Str::slug($state));
                                 }),
+
                             Forms\Components\TextInput::make('slug')
                                 ->disabled()
                                 ->dehydrated()
@@ -53,6 +56,7 @@ class ProductResource extends Resource
                                 ->unique(Product::class, 'slug', ignoreRecord: true),
                             Forms\Components\MarkdownEditor::make('description')->columnSpan('full')
                         ])->columns(2),
+
                         Forms\Components\Section::make('Price & Stock')
                             ->schema([
                                 Forms\Components\TextInput::make('sku')
@@ -170,7 +174,11 @@ class ProductResource extends Resource
                     ->relationship('brand', 'name')
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
